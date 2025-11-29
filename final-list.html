@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final Packing List - Pakko</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .success-header {
+      background: linear-gradient(135deg, var(--status-good) 0%, #059669 100%);
+      border-radius: var(--radius-xl);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      color: white;
+      text-align: center;
+    }
+
+    .success-header h1 {
+      color: white;
+      margin-bottom: var(--space-sm);
+    }
+
+    .success-header p {
+      color: rgba(255,255,255,0.9);
+    }
+
+    .category-section {
+      margin-bottom: var(--space-lg);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) 0;
+      margin-bottom: var(--space-sm);
+      border-bottom: 2px solid var(--slate-100);
+    }
+
+    .category-icon {
+      font-size: 1.25rem;
+    }
+
+    .category-name {
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--slate-700);
+    }
+
+    .category-count {
+      margin-left: auto;
+      font-size: 0.875rem;
+      color: var(--slate-400);
+    }
+
+    .checklist-item {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checklist-item:active {
+      transform: scale(0.99);
+    }
+
+    .ai-warning-badge {
+      font-size: 0.75rem;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--sand-100);
+      color: var(--sand-500);
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .ai-added-badge {
+      font-size: 0.75rem;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--status-suggestion-bg);
+      color: var(--status-suggestion);
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: var(--space-md);
+      justify-content: center;
+      margin-top: var(--space-lg);
+    }
+
+    .btn-share {
+      padding: var(--space-md) var(--space-lg);
+      border-radius: var(--radius-lg);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      border: 2px solid var(--slate-200);
+      background: white;
+      color: var(--slate-600);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .btn-share:hover {
+      border-color: var(--teal-400);
+      color: var(--teal-700);
+      background: var(--teal-50);
+    }
+
+    .completion-message {
+      text-align: center;
+      padding: var(--space-xl);
+      background: var(--teal-50);
+      border-radius: var(--radius-xl);
+      margin-top: var(--space-xl);
+      display: none;
+    }
+
+    .completion-message.show {
+      display: block;
+      animation: fadeInUp 0.4s ease;
+    }
+
+    .completion-icon {
+      font-size: 3rem;
+      margin-bottom: var(--space-md);
+    }
+
+    .trip-reminder {
+      background: var(--slate-50);
+      border-radius: var(--radius-lg);
+      padding: var(--space-md);
+      margin-bottom: var(--space-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .trip-reminder-icon {
+      font-size: 1.5rem;
+    }
+
+    .trip-reminder-text {
+      flex: 1;
+    }
+
+    .trip-reminder-destination {
+      font-weight: 600;
+      color: var(--slate-800);
+    }
+
+    .trip-reminder-dates {
+      font-size: 0.875rem;
+      color: var(--slate-500);
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">🎒</div>
+          <div class="logo-text">Pakko<span>.ai</span></div>
+        </a>
+        <a href="recommendations.html" class="btn btn-secondary">← Back to Review</a>
+      </header>
+
+      <!-- Success Header -->
+      <div class="success-header animate-in">
+        <div style="font-size: 2.5rem; margin-bottom: var(--space-sm);">✅</div>
+        <h1>Your Packing List is Ready!</h1>
+        <p>Check off items as you pack. Have a great trip!</p>
+      </div>
+
+      <!-- Trip Reminder -->
+      <div class="trip-reminder animate-in animate-delay-1" id="tripReminder">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="card animate-in animate-delay-1">
+        <div class="card-body">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-sm);">
+            <span style="font-weight: 600; color: var(--slate-700);">Packing Progress</span>
+            <span id="progressText" style="font-size: 0.875rem; color: var(--slate-500);">0 of 0 items packed</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Checklist by Category -->
+      <div class="card animate-in animate-delay-2">
+        <div class="card-body" id="checklistContainer">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Completion Message -->
+      <div class="completion-message" id="completionMessage">
+        <div class="completion-icon">🎉</div>
+        <h2 style="margin-bottom: var(--space-sm);">All Packed!</h2>
+        <p style="color: var(--slate-600);">You're ready for your trip. Have an amazing time!</p>
+      </div>
+
+      <!-- Share Buttons -->
+      <div class="share-buttons animate-in animate-delay-3">
+        <button class="btn-share" onclick="shareList()">
+          📤 Share List
+        </button>
+        <button class="btn-share" onclick="printList()">
+          🖨️ Print
+        </button>
+        <a href="index.html" class="btn-share">
+          🏠 New Trip
+        </a>
+      </div>
+
+      <!-- Footer Spacer -->
+      <div style="height: var(--space-3xl);"></div>
+    </div>
+  </div>
+
+  <script src="js/trips-data.js"></script>
+  <script>
+    const trip = getCurrentTrip();
+    const savedState = getPackingState() || {};
+    const itemStates = savedState.itemStates || {};
+    const customItems = savedState.customItems || [];
+    let checkedItems = {};
+
+    // Build final list
+    function buildFinalList() {
+      const finalItems = [];
+
+      // Add user items that weren't removed
+      trip.userItems.forEach(item => {
+        const state = itemStates[item.id] || {};
+        if (!state.removed) {
+          finalItems.push({
+            ...item,
+            wasOverridden: state.kept && (item.status === 'warning' || item.status === 'problem'),
+            source: 'user'
+          });
+        }
+      });
+
+      // Add custom items
+      customItems.forEach(item => {
+        finalItems.push({
+          ...item,
+          source: 'custom'
+        });
+      });
+
+      // Add accepted suggestions
+      trip.suggestions.forEach(item => {
+        const state = itemStates[`sug_${item.id}`] || {};
+        if (state.added) {
+          finalItems.push({
+            ...item,
+            source: 'suggestion'
+          });
+        }
+      });
+
+      return finalItems;
+    }
+
+    // Group items by category
+    function groupByCategory(items) {
+      const groups = {};
+      items.forEach(item => {
+        const cat = item.category || 'other';
+        if (!groups[cat]) groups[cat] = [];
+        groups[cat].push(item);
+      });
+      return groups;
+    }
+
+    // Render checklist
+    function renderChecklist() {
+      const finalItems = buildFinalList();
+      const grouped = groupByCategory(finalItems);
+      const container = document.getElementById('checklistContainer');
+
+      // Update trip reminder
+      document.getElementById('tripReminder').innerHTML = `
+        <div class="trip-reminder-icon">${trip.icon}</div>
+        <div class="trip-reminder-text">
+          <div class="trip-reminder-destination">${trip.destination}</div>
+          <div class="trip-reminder-dates">${trip.dates} • ${trip.duration} • ${trip.weather.temp}</div>
+        </div>
+      `;
+
+      // Category order
+      const categoryOrder = ['clothing', 'toiletries', 'documents', 'electronics', 'health', 'comfort'];
+      const sortedCategories = Object.keys(grouped).sort((a, b) => {
+        const aIndex = categoryOrder.indexOf(a);
+        const bIndex = categoryOrder.indexOf(b);
+        return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+      });
+
+      let html = '';
+
+      sortedCategories.forEach(category => {
+        const items = grouped[category];
+        const cat = categories[category] || { name: category, icon: '📦' };
+
+        html += `
+          <div class="category-section">
+            <div class="category-header">
+              <span class="category-icon">${cat.icon}</span>
+              <span class="category-name">${cat.name}</span>
+              <span class="category-count">${items.length} items</span>
+            </div>
+            ${items.map(item => `
+              <div class="checklist-item ${checkedItems[item.id] ? 'checked' : ''}" onclick="toggleItem(${item.id})">
+                <div class="checklist-checkbox ${checkedItems[item.id] ? 'checked' : ''}">
+                  ${checkedItems[item.id] ? '✓' : ''}
+                </div>
+                <div class="checklist-item-name">${item.name}</div>
+                ${item.wasOverridden ? '<span class="ai-warning-badge">⚡ Override</span>' : ''}
+                ${item.source === 'suggestion' ? '<span class="ai-added-badge">💡 AI Suggested</span>' : ''}
+                ${item.source === 'custom' ? '<span class="ai-added-badge" style="background: var(--status-good-bg); color: var(--status-good);">✎ Added by you</span>' : ''}
+              </div>
+            `).join('')}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      updateProgress();
+    }
+
+    // Toggle item checked state
+    function toggleItem(id) {
+      checkedItems[id] = !checkedItems[id];
+      renderChecklist();
+    }
+
+    // Update progress
+    function updateProgress() {
+      const finalItems = buildFinalList();
+      const total = finalItems.length;
+      const checked = Object.values(checkedItems).filter(v => v).length;
+      const percentage = total > 0 ? Math.round((checked / total) * 100) : 0;
+
+      document.getElementById('progressFill').style.width = `${percentage}%`;
+      document.getElementById('progressText').textContent = `${checked} of ${total} items packed`;
+
+      // Show completion message
+      const completionMsg = document.getElementById('completionMessage');
+      if (checked === total && total > 0) {
+        completionMsg.classList.add('show');
+      } else {
+        completionMsg.classList.remove('show');
+      }
+    }
+
+    // Share list
+    function shareList() {
+      const finalItems = buildFinalList();
+      const text = `My packing list for ${trip.destination}:\n\n` +
+        finalItems.map(item => `☐ ${item.name}`).join('\n') +
+        `\n\nCreated with Pakko.ai`;
+
+      if (navigator.share) {
+        navigator.share({
+          title: `Packing List - ${trip.destination}`,
+          text: text
+        });
+      } else {
+        // Fallback - copy to clipboard
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Packing list copied to clipboard!');
+        });
+      }
+    }
+
+    // Print list
+    function printList() {
+      window.print();
+    }
+
+    // Initialize
+    renderChecklist();
+  </script>
+</body>
+</html>

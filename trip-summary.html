@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip Summary - Pakko</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">🎒</div>
+          <div class="logo-text">Pakko<span>.ai</span></div>
+        </a>
+        <a href="index.html" class="btn btn-secondary">← Change Trip</a>
+      </header>
+
+      <!-- Trip Summary Card -->
+      <div class="trip-summary animate-in" id="tripSummary">
+        <!-- Content populated by JavaScript -->
+      </div>
+
+      <!-- What to expect section -->
+      <div class="card animate-in animate-delay-1">
+        <div class="card-body" style="text-align: center;">
+          <h3 style="margin-bottom: var(--space-md);">How Pakko Works</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-xl); margin: var(--space-xl) 0;">
+            <div>
+              <div style="font-size: 2rem; margin-bottom: var(--space-sm);">📝</div>
+              <div style="font-weight: 600; color: var(--slate-800);">1. Build Your List</div>
+              <div style="font-size: 0.875rem; color: var(--slate-500); margin-top: var(--space-xs);">Add items you're planning to pack</div>
+            </div>
+            <div>
+              <div style="font-size: 2rem; margin-bottom: var(--space-sm);">🤖</div>
+              <div style="font-weight: 600; color: var(--slate-800);">2. Get AI Review</div>
+              <div style="font-size: 0.875rem; color: var(--slate-500); margin-top: var(--space-xs);">Smart recommendations based on your trip</div>
+            </div>
+            <div>
+              <div style="font-size: 2rem; margin-bottom: var(--space-sm);">✅</div>
+              <div style="font-weight: 600; color: var(--slate-800);">3. Pack with Confidence</div>
+              <div style="font-size: 0.875rem; color: var(--slate-500); margin-top: var(--space-xs);">Finalized checklist ready to use</div>
+            </div>
+          </div>
+
+          <a href="packing-list.html" class="btn btn-primary btn-lg" style="margin-top: var(--space-lg);">
+            Start Packing List →
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/trips-data.js"></script>
+  <script>
+    // Get current trip and populate the page
+    const trip = getCurrentTrip();
+
+    // Update page title
+    document.title = `${trip.title} - Pakko`;
+
+    // Populate trip summary
+    const summaryHTML = `
+      <div class="trip-summary-header">
+        <div style="font-size: 2.5rem; margin-bottom: var(--space-sm);">${trip.icon}</div>
+        <div class="trip-summary-title">${trip.title}</div>
+        <div class="trip-summary-destination">${trip.destination}</div>
+      </div>
+      <div class="trip-summary-body">
+        <div class="trip-stat">
+          <div class="trip-stat-icon">📅</div>
+          <div class="trip-stat-value">${trip.dates}</div>
+          <div class="trip-stat-label">Travel Dates</div>
+        </div>
+        <div class="trip-stat">
+          <div class="trip-stat-icon">🌙</div>
+          <div class="trip-stat-value">${trip.duration}</div>
+          <div class="trip-stat-label">Duration</div>
+        </div>
+        <div class="trip-stat">
+          <div class="trip-stat-icon">${trip.weather.icon}</div>
+          <div class="trip-stat-value">${trip.weather.temp}</div>
+          <div class="trip-stat-label">${trip.weather.condition}</div>
+        </div>
+        <div class="trip-stat">
+          <div class="trip-stat-icon">🎯</div>
+          <div class="trip-stat-value">${trip.tripType}</div>
+          <div class="trip-stat-label">Trip Type</div>
+        </div>
+        <div class="trip-stat">
+          <div class="trip-stat-icon">🏠</div>
+          <div class="trip-stat-value">${trip.accommodation}</div>
+          <div class="trip-stat-label">Accommodation</div>
+        </div>
+        <div class="trip-stat">
+          <div class="trip-stat-icon">💧</div>
+          <div class="trip-stat-value">${trip.weather.precipitation}</div>
+          <div class="trip-stat-label">Precipitation</div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('tripSummary').innerHTML = summaryHTML;
+  </script>
+</body>
+</html>

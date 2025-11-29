@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Recommendations - Pakko</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .ai-header {
+      background: var(--md-primary);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      color: white;
+      text-align: center;
+    }
+
+    .ai-header h1 {
+      color: white;
+      margin-bottom: var(--space-sm);
+      font-family: var(--md-font);
+      font-weight: 400;
+    }
+
+    .ai-header p {
+      color: rgba(255,255,255,0.85);
+      font-size: 1rem;
+    }
+
+    .ai-stats {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-xl);
+      margin-top: var(--space-lg);
+      padding-top: var(--space-lg);
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .ai-stat {
+      text-align: center;
+    }
+
+    .ai-stat-value {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 700;
+    }
+
+    .ai-stat-label {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-good { color: #6ee7b7; }
+    .stat-warning { color: #fde68a; }
+    .stat-problem { color: #fca5a5; }
+    .stat-suggestion { color: #93c5fd; }
+
+    .loading-state {
+      text-align: center;
+      padding: var(--space-3xl);
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--slate-200);
+      border-top-color: var(--teal-500);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto var(--space-lg);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .item-expanded {
+      background: rgba(0,0,0,0.02);
+      border-radius: var(--radius-md);
+      padding: var(--space-md);
+      margin-top: var(--space-sm);
+    }
+
+    .override-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+      font-size: 0.75rem;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--sand-100);
+      color: var(--sand-500);
+      border-radius: var(--radius-full);
+      margin-left: var(--space-sm);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+
+    .section-count {
+      font-size: 0.875rem;
+      color: var(--slate-500);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">🎒</div>
+          <div class="logo-text">Pakko<span>.ai</span></div>
+        </a>
+        <a href="packing-list.html" class="btn btn-secondary">← Edit List</a>
+      </header>
+
+      <!-- AI Header -->
+      <div class="ai-header animate-in" id="aiHeader">
+        <div style="font-size: 2.5rem; margin-bottom: var(--space-sm);">🤖</div>
+        <h1>AI Recommendations</h1>
+        <p id="tripContext">Analyzing your packing list...</p>
+        <div class="ai-stats" id="aiStats">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs animate-in animate-delay-1">
+        <button class="filter-tab active" data-filter="all" onclick="filterItems('all', this)">All Items</button>
+        <button class="filter-tab" data-filter="good" onclick="filterItems('good', this)">✓ Approved</button>
+        <button class="filter-tab" data-filter="warning" onclick="filterItems('warning', this)">⚠ Caution</button>
+        <button class="filter-tab" data-filter="problem" onclick="filterItems('problem', this)">✕ Problems</button>
+      </div>
+
+      <!-- Add Custom Item -->
+      <div class="card animate-in animate-delay-1" style="margin-bottom: var(--space-xl);">
+        <div class="card-body">
+          <div style="display: flex; gap: var(--space-sm); align-items: center;">
+            <input
+              type="text"
+              id="customItemInput"
+              placeholder="Add another item to your list..."
+              style="flex: 1; padding: 12px 16px; font-size: 1rem; font-family: var(--md-font); border: 1px solid var(--md-outline); border-radius: var(--radius-sm); background: var(--md-surface);"
+              onkeypress="if(event.key === 'Enter') addCustomItem()"
+            >
+            <select id="customCategorySelect" style="padding: 12px 16px; font-size: 1rem; font-family: var(--md-font); border: 1px solid var(--md-outline); border-radius: var(--radius-sm); background: var(--md-surface);">
+              <option value="clothing">👕 Clothing</option>
+              <option value="toiletries">🧴 Toiletries</option>
+              <option value="documents">📄 Documents</option>
+              <option value="electronics">🔌 Electronics</option>
+              <option value="health">💊 Health</option>
+              <option value="comfort">✨ Comfort</option>
+            </select>
+            <button onclick="addCustomItem()" class="btn btn-primary">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p style="color: var(--slate-500);">Analyzing your packing list for your trip...</p>
+      </div>
+
+      <!-- Items Container -->
+      <div id="itemsContainer" style="display: none;">
+        <!-- Your Items Section -->
+        <div class="packing-section" id="userItemsSection">
+          <div class="section-header">
+            <h3 class="section-title">
+              <span class="section-icon">📋</span>
+              Your Items
+            </h3>
+            <span class="section-count" id="userItemsCount"></span>
+          </div>
+          <div id="userItemsList"></div>
+        </div>
+
+        <!-- AI Suggestions Section -->
+        <div class="suggestions-section" id="suggestionsSection">
+          <h3 class="suggestions-title">
+            <span>💡</span>
+            Suggested Additions
+          </h3>
+          <p style="font-size: 0.875rem; color: var(--slate-600); margin-bottom: var(--space-md);">
+            Based on your destination and trip type, you might want to consider adding these items:
+          </p>
+          <div id="suggestionsList"></div>
+        </div>
+      </div>
+
+      <!-- Footer Spacer -->
+      <div class="footer-spacer"></div>
+    </div>
+  </div>
+
+  <!-- Fixed Footer -->
+  <div class="footer-actions">
+    <a href="packing-list.html" class="btn btn-secondary btn-block-mobile">← Back to Edit</a>
+    <a href="final-list.html" class="btn btn-primary btn-lg btn-block-mobile">
+      Finalize List →
+    </a>
+  </div>
+
+  <script src="js/trips-data.js"></script>
+  <script>
+    const trip = getCurrentTrip();
+    let itemStates = {}; // Track user decisions on items
+    let currentFilter = 'all';
+    let customItems = []; // Track user-added custom items
+
+    // Initialize
+    document.getElementById('tripContext').textContent =
+      `Analyzed for ${trip.destination} • ${trip.weather.temp} ${trip.weather.condition}`;
+
+    // Simulate loading then show results
+    setTimeout(() => {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('itemsContainer').style.display = 'block';
+      renderItems();
+      updateStats();
+    }, 1500);
+
+    // Add custom item
+    function addCustomItem() {
+      const input = document.getElementById('customItemInput');
+      const category = document.getElementById('customCategorySelect').value;
+      const name = input.value.trim();
+
+      if (name) {
+        const newItem = {
+          id: Date.now(),
+          name: name,
+          category: category,
+          status: 'good',
+          aiMessage: 'Added by you - ready to pack!',
+          isCustom: true
+        };
+        customItems.push(newItem);
+        input.value = '';
+        renderItems();
+        updateStats();
+        saveState();
+      }
+    }
+
+    // Render all items
+    function renderItems() {
+      renderUserItems();
+      renderSuggestions();
+    }
+
+    // Render user items with AI feedback
+    function renderUserItems() {
+      const container = document.getElementById('userItemsList');
+      const allItems = [...trip.userItems, ...customItems];
+
+      // Count visible items
+      const visibleItems = allItems.filter(item =>
+        currentFilter === 'all' || item.status === currentFilter
+      );
+
+      document.getElementById('userItemsCount').textContent = `${visibleItems.length} items`;
+
+      container.innerHTML = allItems.map(item => {
+        const state = itemStates[item.id] || {};
+        const isRemoved = state.removed;
+        const isKept = state.kept;
+        const isHidden = currentFilter !== 'all' && item.status !== currentFilter;
+
+        if (isHidden) return '';
+
+        return `
+          <div class="packing-item status-${item.status} ${isRemoved ? 'removed' : ''}" data-status="${item.status}">
+            <div class="packing-item-header">
+              <div class="packing-item-name">
+                <span class="packing-item-status ${item.status}">${getStatusIcon(item.status)}</span>
+                ${item.name}
+                ${isKept ? '<span class="override-badge">⚡ Keeping anyway</span>' : ''}
+                ${item.isCustom ? '<span class="override-badge" style="background: var(--status-good-bg); color: var(--status-good);">✎ Added by you</span>' : ''}
+              </div>
+            </div>
+            <div class="packing-item-message">${item.aiMessage}</div>
+            ${!isRemoved && !isKept && !item.isCustom && (item.status === 'warning' || item.status === 'problem') ? `
+              <div class="packing-item-actions">
+                <button class="btn-item-action btn-keep" onclick="keepItem(${item.id})">✓ Keep Anyway</button>
+                <button class="btn-item-action btn-remove" onclick="removeItem(${item.id})">✕ Remove</button>
+              </div>
+            ` : ''}
+            ${item.isCustom && !isRemoved ? `
+              <div class="packing-item-actions">
+                <button class="btn-item-action btn-remove" onclick="removeCustomItem(${item.id})">✕ Remove</button>
+              </div>
+            ` : ''}
+            ${isRemoved && !item.isCustom ? `
+              <div class="packing-item-actions">
+                <button class="btn-item-action btn-keep" onclick="undoRemove(${item.id})">↩ Undo Remove</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render AI suggestions
+    function renderSuggestions() {
+      const container = document.getElementById('suggestionsList');
+      const suggestions = trip.suggestions;
+
+      container.innerHTML = suggestions.map(item => {
+        const state = itemStates[`sug_${item.id}`] || {};
+        const isAdded = state.added;
+
+        return `
+          <div class="packing-item status-suggestion ${isAdded ? 'removed' : ''}" style="${isAdded ? 'opacity: 0.6;' : ''}">
+            <div class="packing-item-header">
+              <div class="packing-item-name">
+                <span class="packing-item-status suggestion">+</span>
+                ${item.name}
+                ${isAdded ? '<span class="override-badge" style="background: var(--status-good-bg); color: var(--status-good);">✓ Added</span>' : ''}
+              </div>
+            </div>
+            <div class="packing-item-message">${item.aiMessage}</div>
+            ${!isAdded ? `
+              <div class="packing-item-actions">
+                <button class="btn-item-action btn-add" onclick="addSuggestion(${item.id})">+ Add to List</button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Get status icon
+    function getStatusIcon(status) {
+      const icons = {
+        good: '✓',
+        warning: '!',
+        problem: '✕',
+        suggestion: '+'
+      };
+      return icons[status] || '•';
+    }
+
+    // Update stats
+    function updateStats() {
+      const allItems = [...trip.userItems, ...customItems];
+      const stats = {
+        good: allItems.filter(i => i.status === 'good' && !itemStates[i.id]?.removed).length,
+        warning: allItems.filter(i => i.status === 'warning' && !itemStates[i.id]?.removed).length,
+        problem: allItems.filter(i => i.status === 'problem' && !itemStates[i.id]?.removed).length,
+        suggestions: trip.suggestions.filter(i => !itemStates[`sug_${i.id}`]?.added).length
+      };
+
+      // Add kept items to good count
+      allItems.forEach(item => {
+        if (itemStates[item.id]?.kept && (item.status === 'warning' || item.status === 'problem')) {
+          stats.good++;
+          if (item.status === 'warning') stats.warning--;
+          if (item.status === 'problem') stats.problem--;
+        }
+      });
+
+      document.getElementById('aiStats').innerHTML = `
+        <div class="ai-stat">
+          <div class="ai-stat-value stat-good">${stats.good}</div>
+          <div class="ai-stat-label">Approved</div>
+        </div>
+        <div class="ai-stat">
+          <div class="ai-stat-value stat-warning">${stats.warning}</div>
+          <div class="ai-stat-label">Caution</div>
+        </div>
+        <div class="ai-stat">
+          <div class="ai-stat-value stat-problem">${stats.problem}</div>
+          <div class="ai-stat-label">Problems</div>
+        </div>
+        <div class="ai-stat">
+          <div class="ai-stat-value stat-suggestion">${stats.suggestions}</div>
+          <div class="ai-stat-label">Suggestions</div>
+        </div>
+      `;
+    }
+
+    // Filter items
+    function filterItems(filter, button) {
+      currentFilter = filter;
+
+      // Update active tab
+      document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+      button.classList.add('active');
+
+      renderUserItems();
+    }
+
+    // Item actions
+    function keepItem(id) {
+      itemStates[id] = { kept: true };
+      renderItems();
+      updateStats();
+      saveState();
+    }
+
+    function removeItem(id) {
+      itemStates[id] = { removed: true };
+      renderItems();
+      updateStats();
+      saveState();
+    }
+
+    function undoRemove(id) {
+      delete itemStates[id];
+      renderItems();
+      updateStats();
+      saveState();
+    }
+
+    function addSuggestion(id) {
+      itemStates[`sug_${id}`] = { added: true };
+      renderItems();
+      updateStats();
+      saveState();
+    }
+
+    // Remove custom item
+    function removeCustomItem(id) {
+      customItems = customItems.filter(item => item.id !== id);
+      renderItems();
+      updateStats();
+      saveState();
+    }
+
+    // Save state for final list
+    function saveState() {
+      savePackingState({
+        tripId: trip.id,
+        itemStates: itemStates,
+        customItems: customItems
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Packing List - Pakko</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .add-item-form {
+      display: flex;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+    }
+
+    .add-item-input {
+      flex: 1;
+      padding: var(--space-md);
+      font-size: 1rem;
+      font-family: var(--font-body);
+      border: 2px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-fast);
+    }
+
+    .add-item-input:focus {
+      outline: none;
+      border-color: var(--teal-400);
+      box-shadow: 0 0 0 4px var(--teal-100);
+    }
+
+    .add-item-input::placeholder {
+      color: var(--slate-400);
+    }
+
+    .btn-add-item {
+      padding: var(--space-md) var(--space-lg);
+      background: var(--teal-500);
+      color: white;
+      border: none;
+      border-radius: var(--radius-lg);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-add-item:hover {
+      background: var(--teal-600);
+    }
+
+    .category-select {
+      padding: var(--space-md);
+      font-size: 1rem;
+      font-family: var(--font-body);
+      border: 2px solid var(--slate-200);
+      border-radius: var(--radius-lg);
+      background: white;
+      cursor: pointer;
+      min-width: 140px;
+    }
+
+    .category-select:focus {
+      outline: none;
+      border-color: var(--teal-400);
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: white;
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-sm);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-base);
+    }
+
+    .user-item:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .user-item-checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid var(--teal-400);
+      border-radius: var(--radius-sm);
+      background: var(--teal-500);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .user-item-name {
+      flex: 1;
+      font-weight: 500;
+      color: var(--slate-700);
+    }
+
+    .user-item-category {
+      font-size: 0.75rem;
+      padding: var(--space-xs) var(--space-sm);
+      background: var(--slate-100);
+      color: var(--slate-600);
+      border-radius: var(--radius-full);
+    }
+
+    .btn-remove-item {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: var(--slate-100);
+      color: var(--slate-400);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-remove-item:hover {
+      background: var(--status-problem);
+      color: white;
+    }
+
+    .item-count {
+      text-align: center;
+      padding: var(--space-md);
+      background: var(--teal-50);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .item-count-number {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--teal-600);
+    }
+
+    .item-count-label {
+      font-size: 0.875rem;
+      color: var(--slate-500);
+    }
+
+    .quick-add-section {
+      margin-bottom: var(--space-xl);
+    }
+
+    .quick-add-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--slate-500);
+      margin-bottom: var(--space-sm);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .quick-add-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .quick-add-chip {
+      padding: var(--space-sm) var(--space-md);
+      background: white;
+      border: 2px solid var(--slate-200);
+      border-radius: var(--radius-full);
+      font-size: 0.875rem;
+      color: var(--slate-600);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .quick-add-chip:hover {
+      border-color: var(--teal-400);
+      background: var(--teal-50);
+      color: var(--teal-700);
+    }
+
+    .quick-add-chip.added {
+      background: var(--teal-500);
+      border-color: var(--teal-500);
+      color: white;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">🎒</div>
+          <div class="logo-text">Pakko<span>.ai</span></div>
+        </a>
+        <a href="trip-summary.html" class="btn btn-secondary">← Trip Details</a>
+      </header>
+
+      <!-- Trip Badge -->
+      <div id="tripBadge" style="text-align: center; margin-bottom: var(--space-lg);"></div>
+
+      <!-- Page Title -->
+      <div class="page-intro animate-in">
+        <h1>Build Your Packing List</h1>
+        <p>Add everything you're planning to bring. Our AI will review it for your specific trip.</p>
+      </div>
+
+      <!-- Add Item Form -->
+      <div class="card animate-in animate-delay-1">
+        <div class="card-body">
+          <form class="add-item-form" onsubmit="addItem(event)">
+            <input
+              type="text"
+              id="itemInput"
+              class="add-item-input"
+              placeholder="Add an item (e.g., 3 t-shirts, laptop, sunscreen...)"
+              autocomplete="off"
+            >
+            <select id="categorySelect" class="category-select">
+              <option value="clothing">👕 Clothing</option>
+              <option value="toiletries">🧴 Toiletries</option>
+              <option value="documents">📄 Documents</option>
+              <option value="electronics">🔌 Electronics</option>
+              <option value="health">💊 Health</option>
+              <option value="comfort">✨ Comfort</option>
+            </select>
+            <button type="submit" class="btn-add-item">+ Add</button>
+          </form>
+
+          <!-- Quick Add Suggestions -->
+          <div class="quick-add-section">
+            <div class="quick-add-title">Quick Add Common Items</div>
+            <div class="quick-add-chips" id="quickAddChips">
+              <!-- Populated by JavaScript based on trip type -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item Count -->
+      <div class="item-count animate-in animate-delay-2">
+        <div class="item-count-number" id="itemCount">0</div>
+        <div class="item-count-label">items in your list</div>
+      </div>
+
+      <!-- User's Packing List -->
+      <div class="card animate-in animate-delay-2">
+        <div class="card-header">
+          <h3>Your Packing List</h3>
+        </div>
+        <div class="card-body">
+          <div id="packingList">
+            <div class="empty-state">
+              <div class="empty-state-icon">📦</div>
+              <p>Your packing list is empty.<br>Add items above to get started!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Spacer -->
+      <div class="footer-spacer"></div>
+    </div>
+  </div>
+
+  <!-- Fixed Footer -->
+  <div class="footer-actions">
+    <a href="trip-summary.html" class="btn btn-secondary btn-block-mobile">← Back</a>
+    <a href="recommendations.html" class="btn btn-primary btn-lg btn-block-mobile" id="getRecommendationsBtn" style="opacity: 0.5; pointer-events: none;">
+      Get AI Recommendations →
+    </a>
+  </div>
+
+  <script src="js/trips-data.js"></script>
+  <script>
+    const trip = getCurrentTrip();
+    let userItems = [];
+
+    // Quick add items based on trip type
+    const quickAddItems = {
+      miami: [
+        { name: 'Swimsuit', category: 'clothing' },
+        { name: 'Sunglasses', category: 'clothing' },
+        { name: 'Flip-flops', category: 'clothing' },
+        { name: 'Passport', category: 'documents' },
+        { name: 'Phone charger', category: 'electronics' },
+        { name: 'Sunscreen', category: 'toiletries' },
+        { name: 'Beach towel', category: 'comfort' },
+        { name: 'Light dress/shorts', category: 'clothing' }
+      ],
+      colorado: [
+        { name: 'Winter jacket', category: 'clothing' },
+        { name: 'Thermal underwear', category: 'clothing' },
+        { name: 'Hiking boots', category: 'clothing' },
+        { name: 'Passport', category: 'documents' },
+        { name: 'Phone charger', category: 'electronics' },
+        { name: 'Lip balm', category: 'toiletries' },
+        { name: 'Gloves', category: 'clothing' },
+        { name: 'Warm hat', category: 'clothing' }
+      ],
+      nyc: [
+        { name: 'Business suits', category: 'clothing' },
+        { name: 'Dress shoes', category: 'clothing' },
+        { name: 'Laptop', category: 'electronics' },
+        { name: 'Business cards', category: 'documents' },
+        { name: 'Phone charger', category: 'electronics' },
+        { name: 'Umbrella', category: 'comfort' },
+        { name: 'Warm coat', category: 'clothing' },
+        { name: 'Portfolio/briefcase', category: 'comfort' }
+      ]
+    };
+
+    // Initialize page
+    function initPage() {
+      // Update trip badge
+      document.getElementById('tripBadge').innerHTML = `
+        <span style="display: inline-flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); background: var(--teal-100); border-radius: var(--radius-full); font-size: 0.875rem; color: var(--teal-700);">
+          ${trip.icon} ${trip.destination} • ${trip.dates}
+        </span>
+      `;
+
+      // Populate quick add chips
+      const quickChips = quickAddItems[trip.id] || quickAddItems.miami;
+      const chipsContainer = document.getElementById('quickAddChips');
+      chipsContainer.innerHTML = quickChips.map((item, index) => `
+        <button class="quick-add-chip" data-name="${item.name}" data-category="${item.category}" onclick="quickAdd(this, '${item.name}', '${item.category}')">
+          + ${item.name}
+        </button>
+      `).join('');
+
+      // Load sample items for demo (the items from the trip data that user "entered")
+      trip.userItems.forEach(item => {
+        userItems.push({
+          id: Date.now() + Math.random(),
+          name: item.name,
+          category: item.category
+        });
+      });
+
+      renderList();
+    }
+
+    // Add item from form
+    function addItem(event) {
+      event.preventDefault();
+      const input = document.getElementById('itemInput');
+      const category = document.getElementById('categorySelect').value;
+      const name = input.value.trim();
+
+      if (name) {
+        userItems.push({
+          id: Date.now(),
+          name: name,
+          category: category
+        });
+        input.value = '';
+        renderList();
+      }
+    }
+
+    // Quick add item
+    function quickAdd(button, name, category) {
+      if (button.classList.contains('added')) return;
+
+      userItems.push({
+        id: Date.now() + Math.random(),
+        name: name,
+        category: category
+      });
+
+      button.classList.add('added');
+      button.textContent = '✓ ' + name;
+      renderList();
+    }
+
+    // Remove item
+    function removeItem(id) {
+      userItems = userItems.filter(item => item.id !== id);
+      renderList();
+    }
+
+    // Render the packing list
+    function renderList() {
+      const container = document.getElementById('packingList');
+      const countElement = document.getElementById('itemCount');
+      const recommendBtn = document.getElementById('getRecommendationsBtn');
+
+      countElement.textContent = userItems.length;
+
+      if (userItems.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <p>Your packing list is empty.<br>Add items above to get started!</p>
+          </div>
+        `;
+        recommendBtn.style.opacity = '0.5';
+        recommendBtn.style.pointerEvents = 'none';
+      } else {
+        container.innerHTML = userItems.map(item => `
+          <div class="user-item">
+            <div class="user-item-checkbox">✓</div>
+            <div class="user-item-name">${item.name}</div>
+            <div class="user-item-category">${categories[item.category]?.icon || '📦'} ${categories[item.category]?.name || item.category}</div>
+            <button class="btn-remove-item" onclick="removeItem(${item.id})" title="Remove item">✕</button>
+          </div>
+        `).join('');
+
+        recommendBtn.style.opacity = '1';
+        recommendBtn.style.pointerEvents = 'auto';
+      }
+
+      // Save state for next page
+      savePackingState({
+        tripId: trip.id,
+        userItems: userItems
+      });
+    }
+
+    // Initialize
+    initPage();
+  </script>
+</body>
+</html>
