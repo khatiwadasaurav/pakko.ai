@@ -11,38 +11,38 @@
   --md-on-primary: #ffffff;
   --md-primary-container: #e2e8f0;
   --md-on-primary-container: #1e293b;
-  
+
   --md-surface: #ffffff;
   --md-surface-dim: #f1f5f9;
   --md-surface-container: #f8fafc;
   --md-surface-container-high: #f1f5f9;
   --md-surface-container-highest: #e2e8f0;
-  
+
   --md-on-surface: #1e293b;
   --md-on-surface-variant: #64748b;
   --md-outline: #cbd5e1;
   --md-outline-variant: #e2e8f0;
-  
+
   /* Status colors */
   --md-success: #22c55e;
   --md-success-container: #f0fdf4;
   --md-on-success-container: #166534;
-  
+
   --md-warning: #f59e0b;
   --md-warning-container: #fffbeb;
   --md-on-warning-container: #92400e;
-  
+
   --md-error: #ef4444;
   --md-error-container: #fef2f2;
   --md-on-error-container: #991b1b;
-  
+
   --md-info: #3b82f6;
   --md-info-container: #eff6ff;
   --md-on-info-container: #1e40af;
-  
+
   /* Typography - Roboto */
   --md-font: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-  
+
   /* Legacy variable mappings for compatibility */
   --slate-50: #f8fafc;
   --slate-100: #f1f5f9;
@@ -54,28 +54,28 @@
   --slate-700: #334155;
   --slate-800: #1e293b;
   --slate-900: #0f172a;
-  
+
   --status-good: var(--md-success);
   --status-good-bg: var(--md-success-container);
   --status-good-border: #86efac;
-  
+
   --status-warning: var(--md-warning);
   --status-warning-bg: var(--md-warning-container);
   --status-warning-border: #fde68a;
-  
+
   --status-problem: var(--md-error);
   --status-problem-bg: var(--md-error-container);
   --status-problem-border: #fecaca;
-  
+
   --status-suggestion: var(--md-info);
   --status-suggestion-bg: var(--md-info-container);
   --status-suggestion-border: #bfdbfe;
-  
+
   --primary-dark: var(--md-primary);
   --primary-green: var(--md-success);
   --primary-green-light: #86efac;
   --font-main: var(--md-font);
-  
+
   /* Spacing */
   --space-xs: 4px;
   --space-sm: 8px;
@@ -84,20 +84,20 @@
   --space-xl: 32px;
   --space-2xl: 48px;
   --space-3xl: 64px;
-  
+
   /* Border radius - Material 3 */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 28px;
   --radius-full: 9999px;
-  
+
   /* Elevation - Material 3 shadows */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15);
   --shadow-md: 0 1px 2px rgba(0,0,0,0.3), 0 2px 6px 2px rgba(0,0,0,0.15);
   --shadow-lg: 0 4px 8px 3px rgba(0,0,0,0.15), 0 1px 3px rgba(0,0,0,0.3);
   --shadow-xl: 0 6px 10px 4px rgba(0,0,0,0.15), 0 2px 3px rgba(0,0,0,0.3);
-  
+
   /* Transitions - Material motion */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -816,20 +816,36 @@ p {
   .container {
     padding: var(--space-md);
   }
-  
+
   h1 {
     font-size: 1.5rem;
   }
-  
+
   .trip-summary-body {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .footer-actions {
     flex-direction: column;
   }
-  
+
   .btn-block-mobile {
     width: 100%;
+  }
+
+  /* Make add item form responsive */
+  .add-item-form {
+    flex-direction: column;
+  }
+
+  .add-item-input,
+  .category-select,
+  .add-item-form .btn {
+    width: 100%;
+    margin-bottom: var(--space-sm);
+  }
+
+  .add-item-form .btn:last-child {
+    margin-bottom: 0;
   }
 }
