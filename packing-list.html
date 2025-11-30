@@ -230,7 +230,7 @@
               <option value="health">💊 Health</option>
               <option value="comfort">✨ Comfort</option>
             </select>
-            <button type="submit" class="btn-add-item">+ Add</button>
+            <button type="button" class="btn-add-item" onclick="addItem(event)">+ Add</button>
           </form>
 
           <!-- Quick Add Suggestions -->
@@ -238,6 +238,13 @@
             <div class="quick-add-title">Quick Add Common Items</div>
             <div class="quick-add-chips" id="quickAddChips">
               <!-- Populated by JavaScript based on trip type -->
+            </div>
+            <br>
+            <div id="packingList">
+              <div class="empty-state">
+                <div class="empty-state-icon">📦</div>
+                <p>Your packing list is empty.<br>Add items above to get started!</p>
+              </div>
             </div>
           </div>
         </div>
@@ -250,19 +257,14 @@
       </div>
 
       <!-- User's Packing List -->
-      <div class="card animate-in animate-delay-2">
-        <div class="card-header">
-          <h3>Your Packing List</h3>
-        </div>
-        <div class="card-body">
-          <div id="packingList">
-            <div class="empty-state">
-              <div class="empty-state-icon">📦</div>
-              <p>Your packing list is empty.<br>Add items above to get started!</p>
-            </div>
-          </div>
-        </div>
-      </div>
+<!--      <div class="card animate-in animate-delay-2">-->
+<!--        <div class="card-header">-->
+<!--          <h3>Your Packing List</h3>-->
+<!--        </div>-->
+<!--        <div class="card-body">-->
+<!--         -->
+<!--        </div>-->
+<!--      </div>-->
 
       <!-- Footer Spacer -->
       <div class="footer-spacer"></div>
